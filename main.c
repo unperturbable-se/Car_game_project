@@ -202,8 +202,8 @@ void delay(int milliseconds)
     clock_t now,then;
 
     pause = milliseconds*(CLOCKS_PER_SEC/1000);
-    auto start = clock();
-    auto stop  = clock();
+    int start = clock();
+    int stop  = clock();
     while( (stop-start) < pause ){stop = clock();};
 }
 void playGame()
