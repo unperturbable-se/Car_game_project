@@ -1,15 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <conio.h>  
-#include <windows.h> 
+#include <string.h>
+#ifdef _WIN32
+    #include <conio.h>  
+    #include <windows.h> 
+    #define CLEAR system("cls")
+    #define COLOR_PURPLE system("color 5")
+    #define COLOR_DEFAULT system("color 07")
+
+#endif
+
+#ifdef __linux__
+    #include "linux_alt.h"
+#endif  
 
 #define TrackWidth 75    
 #define TrackHeight 15  //storage
-#define ViewHeight 15 //display    
-#define DELAY 0
+#define ViewHeight 50 //display    
+#define DELAY 70
 #define MaxLeaderboard 50 // Maximum number of leaderboard entries
-#define acceleration 2.1
+//#define acceleration 2.1
 #define HIDE_CURSOR printf("\e[?25l")  
 #define CAR "~#!#~"
 #define OBSTACLE "~X~"  
@@ -41,6 +52,7 @@ void backStory();
 int main()
 { 
     HIDE_CURSOR;
+    CLEAR;
     backStory();
     titleScreen();
     int choice;
@@ -57,7 +69,7 @@ int main()
             ;
             continue;  
         }
-        system("cls");
+        CLEAR;
         switch(choice)
         {
         case '1':
@@ -91,14 +103,14 @@ int main()
         }
         printf("\nPRESS ANY KEY TO CONTINUE...");
         _getch();
-        system("cls");
+        CLEAR;
     }
     return 0;
 }
 
 void backStory()
 {
- system("color 5");    
+ COLOR_PURPLE;    
  printf("\n\n===BACKSTORY===\n\n");
 
     printf("In the year 2154, Earth has made significant advancements in space travel and colonization.\n");
@@ -107,7 +119,7 @@ void backStory()
     printf("species that has set its sights on Earth for conquest.\n\n");
     printf("\n<CONTINUE>");
     _getch();
-    system("cls");
+    CLEAR;
  printf("=== BACKSTORY===\n\n");   
     printf("Unbeknownst to humanity, the Zylox have secretly infiltrated Earth, preparing for their invasion.\n");
     printf("Their first wave of attack comes unexpectedly in the form of mysterious, high-tech ships that begin appearing\n");
@@ -115,14 +127,14 @@ void backStory()
     printf("Their ships are equipped with sophisticated weaponry and cloaking devices, making them nearly impossible to detect.\n\n");
     printf("\n<CONTINUE>");
     _getch();
-    system("cls");
+    CLEAR;
  printf("=== BACKSTORY===\n\n");   
     printf("The world is in chaos. Cities are evacuated, governments scramble to mount a defense, and panic spreads.\n");
     printf("Amidst the chaos, a lone survivor, **Alex Cruz**, finds himself behind the wheel of an experimental car—an\n");
     printf("advanced, AI-powered vehicle designed for high-speed travel and exploration.\n\n");
     printf("\n<CONTINUE>");
     _getch();
-    system("cls");
+    CLEAR;
  printf("=== BACKSTORY===\n\n");   
     printf("The car, code-named **\"Vanguard\"**, was initially developed for exploration on hostile planetary surfaces,\n");
     printf("but now it becomes humanity's best hope. With no time to waste and no way to stop the alien invasion,\n");
@@ -130,7 +142,7 @@ void backStory()
     printf("drones and spacecraft.\n\n");
     printf("\n<CONTINUE>");
     _getch();
-    system("cls");  
+    CLEAR;  
     setTextColor(7);  
 }
 void titleScreen()
@@ -161,7 +173,7 @@ printf("ESCAPE THE ALIENS\n\n");
 setTextColor(7); 
 printf("<<<PRESS ANY KEY TO CONTINUE>>>"); 
 _getch();
-system("cls");   
+CLEAR;   
 }
 void showMenu()
 {
@@ -196,16 +208,7 @@ void showLeaderboard()
     sortLeaderboard(leaderboard, numEntries);
     displayLeaderboard(leaderboard, numEntries);
 }
-void delay(int milliseconds)
-{
-    long pause;
-    clock_t now,then;
 
-    pause = milliseconds*(CLOCKS_PER_SEC/1000);
-    int start = clock();
-    int stop  = clock();
-    while( (stop-start) < pause ){stop = clock();};
-}
 void playGame()
 {
     char track[TrackHeight][TrackWidth];
@@ -225,12 +228,12 @@ void playGame()
     printf("\033[%dm", 47); //white background
     while (!gameOver)
     {
-          
+        Sleep(delayed_time);
         printTrack(track, carPosX, carPosY, viewStart);
         if (checkCollision(track, carPosX, carPosY))
         {
-            system("cls");
-            system("color 07"); // Reset to default color                      
+            CLEAR;
+            COLOR_DEFAULT; // Reset to default color                      
             printf("Game Over! You collided with an ALIEN.\n");
             saveScore(score); // Save the score to the file
             break;
@@ -268,7 +271,7 @@ void playGame()
 
         // Delay for game speed
        ///////////////////////////////////////////////////////// delay(delayed_time);
-        delayed_time/=acceleration;
+        //delayed_time/=acceleration;
     }
 
     // display the scores
@@ -276,7 +279,7 @@ void playGame()
     int numEntries = 0;
     loadLeaderboard(leaderboard, &numEntries);
 
-    printf("\nYour score: %d\n", score);
+    printf("\nY our score: %d\n", score);
 }
 
 void initializeTrack(char track[TrackHeight][TrackWidth])
@@ -294,7 +297,7 @@ void initializeTrack(char track[TrackHeight][TrackWidth])
 void printTrack(char track[TrackHeight][TrackWidth], int carPosX, int carPosY, int viewStart)
 {
     int i, j;  
-    system("cls");//clearScreen();   
+    CLEAR;//clearScreen();   
     for (i = viewStart; i < viewStart + ViewHeight; i++)
     {
         for (j = 0; j < TrackWidth; j++)
